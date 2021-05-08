@@ -2,12 +2,39 @@ import os
 from datetime import datetime
 import matplotlib.pyplot as plt
 from collections import defaultdict
-import pdb
-
+from typing import List
 
 PATH_NAME = os.path.join('Chat export 31-12-2020', 'export.txt')
 
-def load_data(path):
+
+class Message:
+
+    def __init__(self, line):
+        self.line = line
+
+        try:
+            self.time = line.split(' - ')[0]
+            self.time = datetime.strptime(self.time, '%d-%m-%Y %H:%M')
+
+            self.sender = ''.join(line.split(' - ')[1:]).split(':')[0]
+            self.content = ''.join(''.join(line.split(' - ')[1:]).split(':')[1:]).lower()
+
+            self.correct = any(s in self.content for s in
+                               ['vo', 'voo', 'braveau', 'veau', 'bvo', 'bravo', 'vooo', 'voooo', 'vooooo']) and \
+                           self.time.hour == 12 and self.time.minute == 13
+
+            self.incorrect = any(s in self.content for s in
+                                 ['vo', 'voo', 'braveau', 'veau', 'bvo', 'bravo', 'vooo', 'voooo', 'vooooo',
+                                  'Dit bericht is verwijderd']) and \
+                             self.time.hour == 12 and (self.time.minute == 12 or self.time.minute == 14)
+
+            self.valid = True
+
+        except:
+            self.valid = False
+
+
+def load_data(path: str):
     """ Load the data into a list of instances of the message class """
 
     with open(path, 'r', encoding='utf-8') as export_file:
@@ -18,7 +45,7 @@ def load_data(path):
     return all_messages
 
 
-def plot_all_time(messages):
+def plot_all_time(messages: List[Message]):
     """ Make a plot of the most correct messages of a year """
     filtered_messages = [message for message in messages]
 
@@ -58,7 +85,7 @@ def plot_all_time(messages):
     return
 
 
-def plot_year(messages, year=2016):
+def plot_year(messages: List[Message], year: int = 2016):
     """ Make a plot of the most correct messages of a year """
     filtered_messages = [message for message in messages if message.time.year == year]
 
@@ -85,7 +112,7 @@ def plot_year(messages, year=2016):
     plt.yticks(fontsize=25)
     plt.title(f'Aantal keer vo in {year}', fontsize=35)
     for (name, count), label in zip(data_correct, correct_labels):
-    	plt.text(name, count, str(label))
+        plt.text(name, count, str(label))
     plt.tight_layout()
     plt.savefig(f'{year}_correct.png')
     plt.close()
@@ -96,7 +123,7 @@ def plot_year(messages, year=2016):
     plt.yticks(fontsize=25)
     plt.title(f'Aantal keer vo om 12:12 of 12:14 in {year}', fontsize=35)
     for (name, count), label in zip(data_incorrect, incorrect_labels):
-    	plt.text(name, count, str(label))
+        plt.text(name, count, str(label))
     plt.tight_layout()
     plt.savefig(f'{year}_incorrect.png')
     plt.close()
@@ -104,8 +131,8 @@ def plot_year(messages, year=2016):
     return
 
 
-def plot_diff(messages, min_year, max_year):
-    """ Plot the relative difference """
+def plot_diff(messages: List[Message], min_year: int, max_year: int):
+    """ Plot the relative difference between two years"""
 
     assert min_year < max_year, "Years not valid"
 
@@ -142,34 +169,10 @@ def plot_diff(messages, min_year, max_year):
     plt.yticks(fontsize=25)
     plt.title(f'Procentuele verandering tussen {min_year} en {max_year}', fontsize=35)
     for (name, count), label in zip(diff_data, diff_data_labels):
-    	plt.text(name, count, str(label))
+        plt.text(name, count, str(label))
     plt.tight_layout()
     plt.savefig(f'change_{min_year}_{max_year}.png')
     plt.close()
-
-
-class Message(object):
-
-    def __init__(self, line):
-        self.line = line
-
-        try:
-            self.time = line.split(' - ')[0]
-            self.time = datetime.strptime(self.time, '%d-%m-%Y %H:%M')
-
-            self.sender = ''.join(line.split(' - ')[1:]).split(':')[0]
-            self.content = ''.join(''.join(line.split(' - ')[1:]).split(':')[1:]).lower()
-
-            self.correct = any(s in self.content for s in ['vo', 'voo', 'braveau', 'veau', 'bvo', 'bravo', 'vooo', 'voooo', 'vooooo']) and \
-                self.time.hour == 12 and self.time.minute == 13
-
-            self.incorrect = any(s in self.content for s in ['vo', 'voo', 'braveau', 'veau', 'bvo', 'bravo', 'vooo', 'voooo', 'vooooo', 'Dit bericht is verwijderd']) and \
-                self.time.hour == 12 and (self.time.minute == 12 or self.time.minute == 14)
-
-            self.valid = True
-
-        except:
-            self.valid = False
 
 
 if __name__ == '__main__':
