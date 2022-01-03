@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 from typing import List
 
-PATH_NAME = os.path.join('Chat export 31-12-2020', 'export.txt')
+PATH_NAME = os.path.join('Chat export 01-01-2022', 'export.txt')
 
 
 class Message:
@@ -131,6 +131,49 @@ def plot_year(messages: List[Message], year: int = 2016):
     return
 
 
+def print_statistics(messages: List[Message], year: int = 2016):
+    """ Print a few statistics of the year """
+    filtered_messages = [message for message in messages if message.time.year == year]
+
+    day_to_people = defaultdict(list)
+
+    for message in filtered_messages:
+        if message.correct:
+            day_to_people[message.time.strftime('%j')].append(message.sender)
+
+    print(f'In {year} is er op {len(day_to_people)} dagen "vo" gezegd.')
+
+def plot_lonely_wolf(messages: List[Message], year: int = 2016):
+    """ Plot the number of times someone was the only one to say vo """
+    filtered_messages = [message for message in messages if message.time.year == year]
+
+    day_to_people = defaultdict(list)
+
+    for message in filtered_messages:
+        if message.correct:
+            day_to_people[message.time.strftime('%j')].append(message.sender)
+
+    lonely_wolf = defaultdict(int)
+
+    for people in day_to_people.values():
+        if len(people) == 1:
+            lonely_wolf[people[0]] += 1
+
+    data = [(person, count) for (person, count) in lonely_wolf.items()]
+    data = list(reversed(sorted(data, key=lambda x: x[1])))
+
+    plt.figure(figsize=(20, 10))
+    plt.bar(*zip(*data), label='Lonely wolf')
+    plt.xticks(rotation=35, fontsize=25, ha='right')
+    plt.yticks(fontsize=25)
+    plt.title(f'Lonely wolfs {year}', fontsize=35)
+    plt.tight_layout()
+    plt.savefig(f'{year}_lonely_wolf.png')
+    plt.close()
+
+    print()
+
+
 def plot_diff(messages: List[Message], min_year: int, max_year: int):
     """ Plot the relative difference between two years"""
 
@@ -180,8 +223,12 @@ if __name__ == '__main__':
     # plot_year(messages, year=2016)
     # plot_year(messages, year=2017)
     # plot_year(messages, year=2018)
-    plot_year(messages, year=2019)
-    plot_year(messages, year=2020)
+    # plot_year(messages, year=2019)
+    # plot_year(messages, year=2020)
+    plot_year(messages, year=2021)
+
+    print_statistics(messages, year=2021)
+    plot_lonely_wolf(messages, year=2021)
 
     # plot_all_time(messages)
-    plot_diff(messages, 2019, 2020)
+    plot_diff(messages, 2020, 2021)
