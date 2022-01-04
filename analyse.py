@@ -26,7 +26,7 @@ class Message:
             self.incorrect = any(s in self.content for s in
                                  ['vo', 'voo', 'braveau', 'veau', 'bvo', 'bravo', 'vooo', 'voooo', 'vooooo',
                                   'Dit bericht is verwijderd']) and \
-                             self.time.hour == 12 and (self.time.minute == 12 or self.time.minute == 14)
+                             self.time.hour == 12 and (self.time.minute == 12 or self.time.minute == 14 or self.time.minute == 15)
 
             self.valid = True
 
@@ -142,6 +142,7 @@ def print_statistics(messages: List[Message], year: int = 2016):
             day_to_people[message.time.strftime('%j')].append(message.sender)
 
     print(f'In {year} is er op {len(day_to_people)} dagen "vo" gezegd.')
+
 
 def plot_lonely_wolf(messages: List[Message], year: int = 2016):
     """ Plot the number of times someone was the only one to say vo """
