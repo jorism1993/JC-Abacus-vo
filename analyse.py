@@ -19,11 +19,11 @@ class Message:
             self.sender = ''.join(line.split(' - ')[1:]).split(':')[0]
             self.content = ''.join(''.join(line.split(' - ')[1:]).split(':')[1:]).lower()
 
-            self.correct = any(s in self.content for s in
+            self.correct = any(s.lower() in self.content for s in
                                ['vo', 'voo', 'braveau', 'veau', 'bvo', 'bravo', 'vooo', 'voooo', 'vooooo']) and \
                            self.time.hour == 12 and self.time.minute == 13
 
-            self.incorrect = any(s in self.content for s in
+            self.incorrect = any(s.lower() in self.content for s in
                                  ['vo', 'voo', 'braveau', 'veau', 'bvo', 'bravo', 'vooo', 'voooo', 'vooooo',
                                   'Dit bericht is verwijderd']) and \
                              self.time.hour == 12 and (self.time.minute == 12 or self.time.minute == 14 or self.time.minute == 15)
