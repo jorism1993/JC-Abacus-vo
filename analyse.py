@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 from typing import List
 
-PATH_NAME = os.path.join('Chat export 01-01-2022', 'export.txt')
+PATH_NAME = os.path.join('Chat export 02-01-2023', 'export.txt')
 
 
 class Message:
@@ -211,7 +211,7 @@ def plot_diff(messages: List[Message], min_year: int, max_year: int):
     plt.bar(*zip(*diff_data), color=colours)
     plt.xticks(rotation=35, fontsize=25, ha='right')
     plt.yticks(fontsize=25)
-    plt.title(f'Procentuele verandering tussen {min_year} en {max_year}', fontsize=35)
+    plt.title(f'Verandering tussen {min_year} en {max_year}', fontsize=35)
     for (name, count), label in zip(diff_data, diff_data_labels):
         plt.text(name, count, str(label))
     plt.tight_layout()
@@ -226,10 +226,10 @@ if __name__ == '__main__':
     # plot_year(messages, year=2018)
     # plot_year(messages, year=2019)
     # plot_year(messages, year=2020)
-    plot_year(messages, year=2021)
+    plot_year(messages, year=2022)
 
-    print_statistics(messages, year=2021)
-    plot_lonely_wolf(messages, year=2021)
+    print_statistics(messages, year=2022)
+    plot_lonely_wolf(messages, year=2022)
 
     # plot_all_time(messages)
-    plot_diff(messages, 2020, 2021)
+    plot_diff(messages, 2021, 2022)
